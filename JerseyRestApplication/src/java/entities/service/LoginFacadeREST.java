@@ -148,13 +148,14 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
         if (em != null) {
             List<Login> results = em.createQuery("SELECT L FROM Login L").getResultList();
             String answer = "<h2> Users </h2>" + "<br><table border='1'> <tr>";
-            answer = answer + "<th>USERID</th><th>FIRST NAME</th><th>LAST NAME</th><th>USERNAME</th><th>PASSWORD</th></tr>";
+            answer = answer + "<th>USERID</th><th>FIRST NAME</th><th>LAST NAME</th><th>USERNAME</th><th>PASSWORD</th><th>ROLE</th></tr>";
             for (Login result : results) {
                 answer = answer + "<tr><td>" + result.getUserid() + "</td>";
                 answer = answer + "<td>" + result.getFirstname() + "</td>";
                 answer = answer + "<td>" + result.getLastname() + "</td>";
                 answer = answer + " <td>" + result.getUsername() + "</td>";
-                answer = answer + " <td>" + result.getPassword() + "</td></tr>";
+                answer = answer + " <td>" + result.getPassword() + "</td>";
+                answer = answer + " <td>" + result.getRoleid().getDescription() + "</td></tr>";
             }
             answer = answer + "</table>";
             return answer;
