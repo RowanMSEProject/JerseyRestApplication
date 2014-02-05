@@ -74,7 +74,7 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
             newUser.setRoleid(newRole);
             super.create(newUser);
         } else {
-            throw new WebApplicationException(Response.status(400).entity("Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestDerby/createUserForm.html\">Create User</a>").build());
+            throw new WebApplicationException(Response.status(400).entity("Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/createUserForm.html\">Create User</a>").build());
         }
     }
 
@@ -103,7 +103,7 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
                     + "password='" + oldPswd + "'";
             super.executeQuery(query);
         } else {
-            throw new WebApplicationException(Response.status(400).entity("New Password must contain capital letter and number and be 8 characters long").build());
+            throw new WebApplicationException(Response.status(400).entity("New Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/updatePassword.html\">Create User</a>").build());
         }
     }
 
