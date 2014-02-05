@@ -13,6 +13,7 @@ and open the template in the editor.
         <script type="text/javascript">
             function message( ) {
                 OWF.Eventing.publish("DBchanged", "refresh");
+                setTimeout(function() { location.reload();}, 150);
                 return true;
             }
 
