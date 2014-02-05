@@ -12,6 +12,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.swing.JOptionPane;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -74,7 +75,8 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
             newUser.setRoleid(newRole);
             super.create(newUser);
         } else {
-            throw new WebApplicationException(Response.status(400).entity("Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/createUserForm.html\">Create User</a>").build());
+            //throw new WebApplicationException(Response.status(400).entity("Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/createUserForm.html\">Create User</a>").build());
+            JOptionPane.showMessageDialog(null, "New Password must contain capital letter and number and be 8 characters long ", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -103,7 +105,8 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
                     + "password='" + oldPswd + "'";
             super.executeQuery(query);
         } else {
-            throw new WebApplicationException(Response.status(400).entity("New Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/updatePassword.html\">Create User</a>").build());
+            //throw new WebApplicationException(Response.status(400).entity("New Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/updatePassword.html\">Create User</a>").build());
+            JOptionPane.showMessageDialog(null, "New Password must contain capital letter and number and be 8 characters long ", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
