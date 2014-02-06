@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package entities.service;
 
 import entities.Login;
@@ -12,6 +11,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.script.ScriptException;
 import javax.swing.JOptionPane;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("entities.login")
 public class LoginFacadeREST extends AbstractFacade<Login> {
-    
+
     //@PersistenceContext(unitName = "JerseyRestApplicationPU")
     private EntityManager em = Persistence.createEntityManagerFactory("JerseyRestApplicationPU").createEntityManager();
 
@@ -45,26 +45,27 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     public void create(Login entity) {
         super.create(entity);
     }
-    
+
     /**
-     * Add a new user to the database
-     * Add the necessary fields, leaving rest blank for new user to fill in  (not implemented yet)
-     * the password must return true when passed into checkPassword()
-     * In order to add role field, a new role instance is made
+     * Add a new user to the database Add the necessary fields, leaving rest
+     * blank for new user to fill in (not implemented yet) the password must
+     * return true when passed into checkPassword() In order to add role field,
+     * a new role instance is made
+     *
      * @param firstName
      * @param lastName
      * @param username
      * @param password
-     * @param role 
+     * @param role
      */
     @POST
     @Path("/create")
     @Consumes({"application/x-www-form-urlencoded", "application/xml", "application/json"})
-    public void createUser(@FormParam("firstName") String firstName, 
-                           @FormParam("lastName") String lastName,
-                           @FormParam("username") String username,
-                           @FormParam("password") String password,
-                           @FormParam("role") String role) {
+    public void createUser(@FormParam("firstName") String firstName,
+            @FormParam("lastName") String lastName,
+            @FormParam("username") String username,
+            @FormParam("password") String password,
+            @FormParam("role") String role) {
         if (checkPassword(password)) {
             List<Login> users = em.createNamedQuery("Login.findAll").getResultList();
             int id = users.get(users.size() - 1).getUserid();
@@ -86,27 +87,35 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     public void edit(@PathParam("id") Integer id, Login entity) {
         super.edit(entity);
     }
-    
+
     /**
-     * Update password of a user given userID and old password
-     * the new password must return true when passed into checkPassword()
+     * Update password of a user given userID and old password, the new password
+     * must return true when passed into checkPassword()
+     *
      * @param userid
      * @param oldPswd
-     * @param newPswd 
+     * @param newPswd
      */
-    @POST
     @Path("/updatePswd")
     @Consumes({"application/x-www-form-urlencoded", "application/xml", "application/json"})
     public void updatePswd(@FormParam("username") String userid,
             @FormParam("oldPassword") String oldPswd,
-            @FormParam("newPassword") String newPswd) {
-        if (checkPassword(newPswd)) {
-            String query = "UPDATE Login SET password='" + newPswd + "' WHERE userid=" + userid + " and "
-                    + "password='" + oldPswd + "'";
-            super.executeQuery(query);
-        } else {
-            //throw new WebApplicationException(Response.status(400).entity("New Password must contain capital letter and number and be 8 characters long <a href=\"https://localhost:8100/JerseyRestApplication/updatePassword.html\">Create User</a>").build());
-            JOptionPane.showMessageDialog(null, "New Password must contain capital letter and number and be 8 characters long ", "Error", JOptionPane.ERROR_MESSAGE);
+            @FormParam("newPassword") String newPswd) throws ScriptException, NoSuchMethodException {
+        try {
+            int id = Integer.parseInt(userid);
+            List<Login> lone = em.createNamedQuery("Login.findByUserid").setParameter("userid", id).getResultList();
+            List<Login> ltwo = em.createNamedQuery("Login.findByPassword").setParameter("password", oldPswd).getResultList();
+            if (ltwo.isEmpty() || lone.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Wrong Id or Password", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!checkPassword(newPswd)) {
+                JOptionPane.showMessageDialog(null, "New Password must contain \ncapital letter \nlower case letter\nnumber \nand be 8 characters long", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String query = "UPDATE Login SET password='" + newPswd + "' WHERE userid=" + userid + " and "
+                        + "password='" + oldPswd + "'";
+                super.executeQuery(query);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "UserId must be number", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -115,10 +124,11 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     public void remove(@PathParam("id") Integer id) {
         super.remove(super.find(id));
     }
-    
+
     /**
      * delete a user from the database based off userID input
-     * @param userid 
+     *
+     * @param userid
      */
     @POST
     @Path("/rm")
@@ -129,8 +139,8 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
         //super.executeQuery(query);
         //query = "DELETE FROM Login l WHERE l.userid=" + userid;
         //super.executeQuery(query);
-          int id = Integer.parseInt(userid);
-          super.testRemove(id);
+        int id = Integer.parseInt(userid);
+        super.testRemove(id);
     }
 
     @GET
@@ -139,10 +149,11 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     public Login find(@PathParam("id") Integer id) {
         return super.find(id);
     }
-    
+
     /**
      * Create a table of information about users from Login table
-     * @return 
+     *
+     * @return
      */
     @GET
     @Path("users/table")
@@ -194,12 +205,13 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
     /**
-     * Check the password to make sure it is 8 characters long 
-     * and includes a capital letter, lowercase letter, and number
+     * Check the password to make sure it is 8 characters long and includes a
+     * capital letter, lowercase letter, and number
+     *
      * @param password
-     * @return 
+     * @return
      */
     private boolean checkPassword(String password) {
         boolean hasUppercase = !password.equals(password.toLowerCase());
@@ -214,5 +226,5 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
         }
         return hasUppercase && hasLowercase && isAtLeast8 && hasDigit;
     }
-    
+
 }
